@@ -137,7 +137,7 @@ Ce projet inclut :
 
 **Yassine Elmiri**  
 Développeur Full Stack Passionné 🚀  
-[GitHub](https://github.com/yassineelmiri) | [LinkedIn](https://linkedin.com/in/yassineelmiri)
+[GitHub](https://github.com/yassineelmiri) | [LinkedIn](https://www.linkedin.com/in/yassine-elmiri/)
 
 ---
 
