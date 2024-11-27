@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import Sidebare from "../../../components/Sidebare";
 import { useDispatch } from "react-redux";
 import { createEvenment } from "../../../redux/apiCalls/evenmentCall";
@@ -12,8 +13,8 @@ const CreateEvenements = () => {
   const [file, setFile] = useState(null);
   const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+
+  
 
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -27,35 +28,37 @@ const CreateEvenements = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!title || !places || !stade || !date || !category || !file) {
-      setError("Tous les champs sont obligatoires !");
+      toast.error("Tous les champs sont obligatoires !", {
+        position: "top-right",
+      });
       return;
     }
-
+  
     if (stade.length < 5) {
-      setError("Le nom du stade doit comporter au moins 5 caractères.");
+      toast.error("Le nom du stade doit comporter au moins 5 caractères.", {
+        position: "top-right",
+      });
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("title", title);
     formData.append("places", parseInt(places));
     formData.append("stade", stade);
     formData.append("horaire", date);
     formData.append("category", category);
-    formData.append("image", file); // Add the image file
-
-    // Debugging: Check the FormData content before sending
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
-    }
-
+    formData.append("image", file);
+  
     try {
       const response = await dispatch(createEvenment(formData));
       if (response) {
-        setSuccess("Événement ajouté avec succès !");
-        setError("");
+        toast.success("Événement ajouté avec succès !", {
+          position: "top-right",
+        });
+  
+        // Réinitialiser le formulaire
         setTitle("");
         setPlaces("");
         setStade("");
@@ -64,22 +67,21 @@ const CreateEvenements = () => {
         setCategory("");
       }
     } catch (err) {
-      setError("Une erreur est survenue lors de l'ajout de l'événement.");
+      toast.error("Une erreur est survenue lors de l'ajout de l'événement.", {
+        position: "top-right",
+      });
     }
   };
-
+  
   return (
     <div className="flex min-h-screen bg-gray-800 text-white">
       <Sidebare />
+      <ToastContainer />
       <div className="flex-1 p-6 flex items-center justify-center">
         <div className="bg-gray-900 w-full max-w-lg p-8 rounded-lg shadow-lg space-y-6">
           <h2 className="text-2xl font-semibold text-gray-300 mb-6 text-center">
             Ajouter un Événement Sportif
           </h2>
-
-          {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
-          {success && <div className="text-green-500 mb-4 text-center">{success}</div>}
-
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-300">

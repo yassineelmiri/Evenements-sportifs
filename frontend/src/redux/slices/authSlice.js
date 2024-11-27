@@ -4,7 +4,7 @@ const authSlice = createSlice({
   initialState: {
     user: localStorage.getItem("userInfo")
       ? JSON.parse(localStorage.getItem("userInfo"))
-      : null,
+      : [],
     registerMessage: null,
     isEmailVerified: false,
   },

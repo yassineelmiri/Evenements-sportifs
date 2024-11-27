@@ -39,7 +39,10 @@ const Home = () => {
                 Logout
               </button>
             ) : (
-              <Link to="/signin" className="py-2 px-4 text-white bg-yellow-600 hover:bg-yellow-500 rounded-lg transition duration-200">
+              <Link
+                to="/signin"
+                className="py-2 px-4 text-white bg-yellow-600 hover:bg-yellow-500 rounded-lg transition duration-200"
+              >
                 Login
               </Link>
             )}
@@ -76,30 +79,57 @@ const Home = () => {
         >
           {images.map((image, index) => (
             <SwiperSlide key={index}>
-              <div
-                className="h-full w-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${image})` }}
-              >
-                <div className="flex items-center justify-center h-full bg-black bg-opacity-50">
-                  <div className="text-center text-white">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                      Evénements Sporti
-                      <span className="text-yellow-500">fs</span>
-                    </h1>
-                    <div className="flex justify-center space-x-4">
-                      <button className="bg-yellow-500 text-black px-6 py-2 rounded hover:bg-yellow-600">
-                        READ MORE
-                      </button>
-                      <Link
-                        to="/signin"
-                        className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-6 py-2 rounded hover:bg-yellow-600 hover:text-black transition duration-200"
-                      >
-                        BOOK A TICKET
-                      </Link>
+              {userInfo ? (
+                <div
+                  className="h-full w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${image})` }}
+                >
+                  <div className="flex items-center justify-center h-full bg-black bg-opacity-50">
+                    <div className="text-center text-white">
+                      <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                      Loading Tick
+                        <span className="text-yellow-500">et...</span>
+                      </h1>
+                      <div className="flex justify-center space-x-4">
+                        <button className="bg-yellow-500 text-black px-6 py-2 rounded hover:bg-yellow-600">
+                          READ MORE
+                        </button>
+                        <Link
+                          to="/signin"
+                          className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-6 py-2 rounded hover:bg-yellow-600 hover:text-black transition duration-200"
+                        >
+                          Imprimer List
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div
+                  className="h-full w-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${image})` }}
+                >
+                  <div className="flex items-center justify-center h-full bg-black bg-opacity-50">
+                    <div  className="text-center text-white">
+                      <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                        Evénements Sporti
+                        <span className="text-yellow-500">fs</span>
+                      </h1>
+                      <div className="flex justify-center space-x-4">
+                        <button className="bg-yellow-500 text-black px-6 py-2 rounded hover:bg-yellow-600">
+                          READ MORE
+                        </button>
+                        <Link
+                          to="/signin"
+                          className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-6 py-2 rounded hover:bg-yellow-600 hover:text-black transition duration-200"
+                        >
+                          BOOK A TICKET
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </SwiperSlide>
           ))}
         </Swiper>

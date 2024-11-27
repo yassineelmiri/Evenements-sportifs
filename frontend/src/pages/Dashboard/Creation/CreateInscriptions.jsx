@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { fetchEvenment } from "../../../redux/apiCalls/evenmentCall";
 import { addNewParticipant } from "../../../redux/apiCalls/participantsApiCall";
 import Sidebare from "../../../components/Sidebare";
@@ -10,7 +12,7 @@ const CreateInscriptions = () => {
   const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
 
-  const { evenments, error, success } = useSelector((state) => state.evenment);
+  const { evenments } = useSelector((state) => state.evenment);
 
   useEffect(() => {
     // Récupération des événements
@@ -23,22 +25,28 @@ const CreateInscriptions = () => {
         const data = await response.json();
         setUsers(data);
       } catch (err) {
-        console.error("Erreur lors de la récupération des utilisateurs :", err);
+        toast.error("Erreur lors de la récupération des utilisateurs !");
       }
     };
 
     fetchUsers();
   }, [dispatch]);
 
+
+  const selectedEvent = evenments.find((event) => event._id === eventId);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!eventId || selectedParticipants.length === 0) {
-      alert("Veuillez sélectionner un événement et au moins un participant.");
+      toast.warning("Veuillez sélectionner un événement et au moins un participant.");
       return;
     }
-    console.log();
-    
+
+    if (selectedEvent && selectedParticipants.length > selectedEvent.places) {
+      toast.warning("Le nombre de participants dépasse les places disponibles !");
+      return;
+    }
 
     const participantData = {
       evenments: eventId,
@@ -46,7 +54,7 @@ const CreateInscriptions = () => {
     };
 
     dispatch(addNewParticipant(participantData));
-
+    toast.success("Participant(s) ajouté(s) avec succès !");
     setSelectedParticipants([]);
     setEventId("");
   };
@@ -62,26 +70,14 @@ const CreateInscriptions = () => {
   return (
     <div className="flex min-h-screen bg-gray-800 text-white">
       <Sidebare />
+      <ToastContainer/>
       <div className="flex-1 p-6 flex items-center justify-center">
         <div className="bg-gray-900 w-full max-w-lg p-8 rounded-lg shadow-lg space-y-6">
           <h2 className="text-2xl font-semibold text-gray-300 mb-6 text-center">
             Ajouter Les Participants
           </h2>
 
-          {error && (
-            <div className="text-red-500 mb-4 text-center">
-              Une erreur s'est produite : {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="text-green-500 mb-4 text-center">
-              Participant(s) ajouté(s) avec succès !
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Sélection de l'événement */}
             <div>
               <label
                 htmlFor="event"
@@ -105,7 +101,6 @@ const CreateInscriptions = () => {
               </select>
             </div>
 
-            {/* Sélection des participants */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Participants
@@ -132,7 +127,6 @@ const CreateInscriptions = () => {
               </div>
             </div>
 
-            {/* Bouton de soumission */}
             <div>
               <button
                 type="submit"
