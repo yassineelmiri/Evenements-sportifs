@@ -28,10 +28,10 @@ const PostSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    horaire: { 
+    horaire: {
       type: Date,
-       required: false, 
-      },
+      required: false,
+    },
     image: {
       type: Object,
       default: {
