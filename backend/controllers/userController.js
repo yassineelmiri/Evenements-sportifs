@@ -5,8 +5,8 @@ const {
   cloudinaryUploadImage,
   cloudinaryRemoveImage,
 } = require("../utils/cloudinary");
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 /**-----------------------------------------------
  * @desc Get All User Profile
  * @router /api/auth/profile
@@ -25,7 +25,7 @@ module.exports.getAllUsersCtrl = asyncHandler(async (req, res) => {
  * @access public
 -------------------------------------------------*/
 module.exports.getUsersProfileCtrl = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select("-password");  
+  const user = await User.findById(req.params.id).select("-password");
   if (!user) {
     return res.status(400).json({ message: "user not found" });
   }
@@ -78,7 +78,6 @@ module.exports.getUsersCountCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-
 /**-----------------------------------------------
  * @desc Profile Photo Upload
  * @router /api/auth/profile/profile-photo-upload
@@ -110,7 +109,9 @@ module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
 
   await user.save();
 
-  res.status(200).json({ message: "Your profile photo was uploaded successfully" });
+  res
+    .status(200)
+    .json({ message: "Your profile photo was uploaded successfully" });
   // Remove the image from the server after uploading to Cloudinary
   fs.unlinkSync(imagePath);
 });
@@ -121,5 +122,4 @@ module.exports.profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
  * @method DELETE
  * @access private (only admin or user himself)
 -------------------------------------------------*/
-module.exports.deleteUserProfileCtrl = asyncHandler(async (req, res) => {
-});
+module.exports.deleteUserProfileCtrl = asyncHandler(async (req, res) => {});
