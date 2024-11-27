@@ -28,12 +28,10 @@ export const addNewParticipant = (participantData) => async (dispatch) => {
   try {
     const { data } = await request.post("/api/participants", participantData);
     dispatch(addParticipant(data));
-    toast.success("Participant added successfully!");
   } catch (error) {
     const errorMessage =
       error.response?.data?.message || "Error adding participant.";
     dispatch(setError(errorMessage));
-    toast.error(errorMessage);
   }
 };
 
@@ -43,11 +41,9 @@ export const deleteParticipantById = (participantId) => async (dispatch) => {
   try {
     await request.delete(`/api/participants/${participantId}`);
     dispatch(deleteParticipant(participantId));
-    toast.success("Participant deleted successfully!");
   } catch (error) {
     const errorMessage =
       error.response?.data?.message || "Error deleting participant.";
     dispatch(setError(errorMessage));
-    toast.error(errorMessage);
   }
 };

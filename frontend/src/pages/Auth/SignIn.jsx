@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/apiCalls/authApiCall";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
@@ -22,20 +22,11 @@ const SignIn = () => {
     }
 
     dispatch(loginUser({ email, password }));
-
-    if (user.isAdmin) {
-      navigate("/Statistique");
-    } else {
-      navigate("/");
-
-    }
-    
-    // 
+    navigate("/Statistique");
   };
 
   useEffect(() => {
     if (user) {
-      toast.success("Successfully logged in!");
     }
   }, [user]);
 
@@ -46,6 +37,8 @@ const SignIn = () => {
         backgroundImage: `url(${require("../../assets/images/cinema-ia.png")})`,
       }}
     >
+      <ToastContainer />
+
       <div className="w-96 bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-yellow-400 text-center mb-6">
           Sign In
@@ -90,7 +83,10 @@ const SignIn = () => {
         </form>
         <div className="mt-4 text-center">
           <span className="text-sm text-white">or </span>
-          <Link to="/forgot-password" className="text-yellow-100 hover:underline">
+          <Link
+            to="/forgot-password"
+            className="text-yellow-100 hover:underline"
+          >
             Forgot Password
           </Link>
           <br />

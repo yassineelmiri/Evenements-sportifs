@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../redux/apiCalls/authApiCall";
-import { toast } from "react-toastify";
+import { toast, ToastContainer  } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import swal from "sweetalert";
 
@@ -51,6 +51,7 @@ const SignUp = () => {
         backgroundImage: `url(${require("../../assets/images/cinema-ia.png")})`,
       }}
     >
+      <ToastContainer />
       {" "}
       <div className="bg-gray-800 bg-opacity-80 text-white p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-3xl font-bold mb-6 text-center text-yellow-400">
@@ -102,7 +103,7 @@ const SignUp = () => {
         </form>
         <div className="mt-4 text-center">
           <span className="text-gray-300">Already have an account? </span>
-          <Link to="/" className="text-yellow-400 hover:underline">
+          <Link to="/signin" className="text-yellow-400 hover:underline">
             Sign In
           </Link>
         </div>

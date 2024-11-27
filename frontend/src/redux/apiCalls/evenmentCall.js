@@ -102,7 +102,7 @@ export function createEvenment(formData) {
 
     dispatch(setLoading(true));
     try {
-        console.log("1");
+        console.log(formData);
 
       const { data } = await request.post("/api/evenments", formData, {
         headers: {
@@ -115,9 +115,6 @@ export function createEvenment(formData) {
       console.log("2");
 
       dispatch(setEvenments(data));
-
-      toast.success("Evenment created successfully!");
-
       return data;
     } catch (error) {
       toast.error(

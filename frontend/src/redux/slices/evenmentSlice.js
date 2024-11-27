@@ -35,7 +35,7 @@ const evenmentSlice = createSlice({
       state.error = null;
     },
     deleteEvenmentSuccess: (state, action) => {
-      state.isFetching = false;
+      state.isFetching = true;
       state.evenments = state.evenments.filter(
         (Evenment) => Evenment._id !== action.payload
       );
