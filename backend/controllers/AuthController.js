@@ -5,12 +5,10 @@ const {
   validateRegiterUser,
   validateLoginUser,
 } = require("../models/User");
-
 const VerificationToken = require("../models/VerificationToken");
-const { required } = require("joi");
 const crypto = require("crypto");
 const sendEmail = require("../utils/SendEmail");
-const { verifyTokenAndAdmin } = require("../middlewares/verifyToken");
+
 /**-----------------------------------------------
  * @desc Register New User 
  * @router /api/auth/register
@@ -131,8 +129,8 @@ module.exports.LoginUserCtrl = asyncHandler(async (req, res) => {
     isAdmin: user.isAdmin,
     profilePhoto: user.profilePhoto,
     token,
-    createdAt:user.createdAt,
-    updatedAt:user.updatedAt,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
     username: user.username,
   });
 });

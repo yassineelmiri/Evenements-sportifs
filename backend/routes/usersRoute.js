@@ -16,7 +16,7 @@ const {
 
 const validateObjectId = require("../middlewares/validateObjectId");
 const photoUpload = require("../middlewares/photoUpload");
-router.route("/profile").get( getAllUsersCtrl);
+router.route("/profile").get(getAllUsersCtrl);
 router
   .route("/profile/:id")
   .get(validateObjectId, getUsersProfileCtrl)

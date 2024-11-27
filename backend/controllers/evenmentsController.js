@@ -3,8 +3,7 @@ const path = require("path");
 const asyncHandler = require("express-async-handler");
 const {
   Post,
-  validateCreateEvenment,
-  validateUpdateEvenment,
+  validateUpdateEvenments,
 } = require("../models/Post");
 
 /**-----------------------------------------------

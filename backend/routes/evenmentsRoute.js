@@ -39,7 +39,6 @@ router
     updateEvenmentsImageCtrl
   );
 
-// /evenments/:id/like
-router.route("/:id/like").put(VerifyToken ,toggleLikeEvenmentsCtrl);
+router.route("/:id/like").put(VerifyToken, toggleLikeEvenmentsCtrl);
 
 module.exports = router;
