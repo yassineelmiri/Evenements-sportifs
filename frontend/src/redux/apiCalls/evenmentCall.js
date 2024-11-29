@@ -9,11 +9,8 @@ import {
 } from "../slices/evenmentSlice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-
-export const toggleLikeEvenment = (EvenmentId) => {
-
+export const updateEvenments = (EvenmentId, formData) => {  
   return async (dispatch) => {
-
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
     if (!userInfo || !userInfo.token) {
@@ -21,27 +18,47 @@ export const toggleLikeEvenment = (EvenmentId) => {
       return;
     }
 
+    dispatch(setLoading(true));
+  for (let pair of formData.entries()) {
+    console.log(`${pair[0]}: ${pair[1]}`);
+  }
     try {
-      const { data } = await request.put(`/api/Evenments/${EvenmentId}/like`, {}, {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      });
+      const { data } = await request.put(`/api/evenments/${EvenmentId}`,formData,
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      dispatch(setSelectedEvenment(data));
-      toast.success("Like updated successfully!");
+      console.log("Réponse serveur :", data);
+      dispatch(setEvenments(data));
+      return data;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error updating like");
+      if (error.response) {
+        console.error("Erreur API :", error.response.data);
+        toast.error(error.response.data.message || "Erreur serveur.");
+      } else {
+        console.error("Erreur non liée à l'API :", error.message);
+        toast.error("Une erreur inattendue est survenue.");
+      }
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 };
+
+
 
 // Fetch Evenments Based on Page Number
 export function fetchEvenment(pageNumber) {
   return async (dispatch) => {
     dispatch(setLoading());
     try {
-      const { data } = await request.get(`/api/evenments?pageNumber=${pageNumber}`);
+      const { data } = await request.get(
+        `/api/evenments?pageNumber=${pageNumber}`
+      );
       dispatch(setEvenments(data));
     } catch (error) {
       dispatch(setError("Erreur lors de la récupération des Evenments."));
@@ -91,7 +108,6 @@ export function getEvenmentCount() {
 
 // Create Evenment
 export function createEvenment(formData) {
-    
   return async (dispatch) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
@@ -102,23 +118,17 @@ export function createEvenment(formData) {
 
     dispatch(setLoading(true));
     try {
-        console.log(formData);
-
       const { data } = await request.post("/api/evenments", formData, {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
         },
-        
-      }
-
-    );
-      console.log("2");
-
+      });
       dispatch(setEvenments(data));
       return data;
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Erreur lors de la création du Evenment."
+        error.response?.data?.message ||
+          "Erreur lors de la création du Evenment."
       );
       console.error("Erreur lors de la création du Evenment :", error);
     } finally {
