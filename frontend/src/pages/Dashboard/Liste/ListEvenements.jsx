@@ -3,40 +3,49 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchEvenment,
   deleteEvenment,
+  updateEvenments,
 } from "../../../redux/apiCalls/evenmentCall";
 import Sidebare from "../../../components/Sidebare";
-import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi"; // Importing icons
+import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 
 const ListEvenements = () => {
   const dispatch = useDispatch();
+  const [title, setTitle] = useState("");
+  const [stade, setStade] = useState("");
+  const [category, setCategory] = useState("");
   const evenments = useSelector((state) => state.evenment.evenments);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [darkMode, setDarkMode] = useState(false); // État pour le mode sombre
+  const [darkMode, setDarkMode] = useState(false);
 
+  // Charger les événements et le mode sombre au montage du composant
   useEffect(() => {
     dispatch(fetchEvenment(1));
-
-    // Vérifier dans localStorage si le mode sombre est activé
     const savedDarkMode = localStorage.getItem("darkMode") === "true";
     setDarkMode(savedDarkMode);
   }, [dispatch]);
 
+  // Sauvegarder le mode sombre dans le localStorage
   useEffect(() => {
-    // Sauvegarder le mode sombre dans localStorage
     localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
+  // Remplir le formulaire lorsque l'événement sélectionné change
   useEffect(() => {
-    console.log("Evenements fetched: ", evenments);
-  }, [evenments]);
-
+    if (selectedEvent) {
+      setTitle(selectedEvent.title || "");
+      setStade(selectedEvent.stade || "");
+      setCategory(selectedEvent.category || "");
+    }
+  }, [selectedEvent]);
 
   const handleDelete = (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce Evenements ?")) {
-      dispatch(deleteEvenment(id));
-      toast.success("supprimer ce participant parfait");
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) {
+      dispatch(deleteEvenment(id)).then(() => {
+        toast.success("Événement supprimé avec succès !");
+      });
+      dispatch(fetchEvenment(1));
     }
   };
 
@@ -63,12 +72,33 @@ const ListEvenements = () => {
     setShowModal(true);
   };
 
-  // Bascule entre le mode clair et sombre
+  const handleSubmitEdit = async (e) => {
+    e.preventDefault();
+
+    if (!title || !stade || !category) {
+      toast.error("Tous les champs sont obligatoires !");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("stade", stade);
+    formData.append("category", category);
+
+    try {
+      await dispatch(updateEvenments(selectedEvent._id, formData));
+      toast.success("Événement mis à jour avec succès !");
+      dispatch(fetchEvenment(1));
+      handleCloseModal();
+    } catch (err) {
+      toast.error("Erreur lors de la mise à jour de l'événement.");
+    }
+  };
 
   return (
     <div className={`flex h-screen ${darkMode ? "dark" : ""}`}>
       <Sidebare />
-      <ToastContainer/>
+      <ToastContainer />
       <main className="flex-1 p-6 bg-gray-100 dark:bg-gray-800 overflow-auto">
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-6">
@@ -98,7 +128,7 @@ const ListEvenements = () => {
                 {Array.isArray(evenments) && evenments.length > 0 ? (
                   evenments.map((event) => (
                     <tr
-                      key={event.id}
+                      key={event._id}
                       className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                       <td className="py-3 px-4">{event._id}</td>
@@ -144,7 +174,7 @@ const ListEvenements = () => {
                       colSpan="8"
                       className="py-3 px-4 text-center text-gray-500"
                     >
-                      No events found
+                      Aucun événement trouvé
                     </td>
                   </tr>
                 )}
@@ -152,101 +182,90 @@ const ListEvenements = () => {
             </table>
           </div>
         </div>
-
-        {/* Modal for editing event */}
-        {/* Modal for editing event */}
+        {/* Modal pour modification */}
         {showModal && selectedEvent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl w-full max-w-md">
-              <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+              <button
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                onClick={handleCloseModal}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6 text-center">
                 Modifier l'Événement
               </h3>
-              <form className="space-y-4">
-                {/* Title Input */}
+              <form onSubmit={handleSubmitEdit} className="space-y-5">
                 <div>
                   <label
                     htmlFor="title"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Titre
                   </label>
                   <input
                     type="text"
                     id="title"
-                    defaultValue={selectedEvent.title}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="mt-2 block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-
-                {/* Stade Input */}
                 <div>
                   <label
                     htmlFor="stade"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Stade
                   </label>
                   <input
                     type="text"
                     id="stade"
-                    defaultValue={selectedEvent.stade}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    value={stade}
+                    onChange={(e) => setStade(e.target.value)}
+                    className="mt-2 block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-
-                {/* Places Input */}
-                <div>
-                  <label
-                    htmlFor="places"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Nombre de Places
-                  </label>
-                  <input
-                    type="number"
-                    id="places"
-                    defaultValue={selectedEvent.places}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
-                </div>
-
-                {/* Category Input */}
                 <div>
                   <label
                     htmlFor="category"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Catégorie
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="category"
-                    defaultValue={selectedEvent.category}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  />
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="mt-2 block w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-200 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Sélectionnez une catégorie</option>
+                    <option value="Football">Football</option>
+                    <option value="Basketball">Basketball</option>
+                    <option value="Tennis">Tennis</option>
+                    <option value="Rugby">Rugby</option>
+                    <option value="Natation">Natation</option>
+                  </select>
                 </div>
-
-                {/* Image Preview */}
                 <div className="mt-4">
                   <img
-                    src={selectedEvent.image.url}
-                    alt={selectedEvent.title}
-                    className="w-full h-40 object-cover rounded-md"
+                    src={selectedEvent?.image?.url}
+                    alt={selectedEvent?.title}
+                    className="w-full h-48 object-cover rounded-lg shadow-lg"
                   />
                 </div>
-
-                {/* Buttons */}
-                <div className="flex justify-end space-x-3 mt-6">
+                <div className="flex justify-end space-x-4 mt-6">
                   <button
                     type="button"
-                    className="py-2 px-4 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    className="py-2 px-6 rounded-lg border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
                     onClick={handleCloseModal}
                   >
                     Annuler
                   </button>
                   <button
                     type="submit"
-                    className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    className="py-2 px-6 rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     Sauvegarder
                   </button>

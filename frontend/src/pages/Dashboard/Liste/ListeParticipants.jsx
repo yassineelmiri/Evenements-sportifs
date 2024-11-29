@@ -1,28 +1,24 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast , ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import {
   fetchParticipants,
   deleteParticipantById,
 } from "../../../redux/apiCalls/participantsApiCall";
 import Sidebare from "../../../components/Sidebare";
-// Import FontAwesome
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPrint } from "@fortawesome/free-solid-svg-icons";
 
-
 const ListeParticipants = () => {
   const dispatch = useDispatch();
-  // Récupération des données depuis le Redux store
   const { participants, loading, error } = useSelector(
     (state) => state.participants
   );
 
-  // Charger les participants lors du chargement du composant
   useEffect(() => {
     dispatch(fetchParticipants());
   }, [dispatch]);
-  // Fonction pour supprimer un participant
+
   const handleDelete = (participantId) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce participant ?")) {
       dispatch(deleteParticipantById(participantId));
@@ -32,15 +28,11 @@ const ListeParticipants = () => {
   useEffect(() => {
     console.log("participants fetched: ", participants);
   }, [participants]);
-  // Fonction pour imprimer les détails d'un participant
   const handlePrint = (participant) => {
-    // Check if participant.evenments is defined before accessing its properties
     if (!participant.evenments) {
       console.error("No event details available for this participant.");
-      return; // Exit the function if event details are missing
+      return;
     }
-
-    // Generate the table rows for the participants
     const participantsTableRows = participant.participants
       .map(
         (participantName, index) => `
@@ -52,8 +44,7 @@ const ListeParticipants = () => {
         </tr>`
       )
       .join("");
-
-      const printContent = `
+    const printContent = `
       <html>
         <head>
           <title>Détails du Participant</title>
@@ -82,6 +73,9 @@ const ListeParticipants = () => {
               border-radius: 8px;
               margin-bottom: 20px;
             }
+            #VadagonVolumeStatus{
+               display: none;
+              }
     
             h2 {
               text-align: center;
@@ -176,8 +170,6 @@ const ListeParticipants = () => {
         </body>
       </html>
     `;
-    
-
     const printWindow = window.open("", "_blank");
     printWindow.document.write(printContent);
     printWindow.document.close();
@@ -187,7 +179,7 @@ const ListeParticipants = () => {
   return (
     <div className="flex h-screen">
       <Sidebare />
-      <ToastContainer/>
+      <ToastContainer />
       <main className="flex-1 p-6 bg-gray-100 dark:bg-gray-800 overflow-auto">
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-6">

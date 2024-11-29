@@ -6,6 +6,7 @@ import {
   startLoading,
   setError,
   deleteParticipant,
+  afficherParticipant,
 } from "../slices/participantsSlice";
 
 // Fetch all participants for an event
@@ -41,6 +42,19 @@ export const deleteParticipantById = (participantId) => async (dispatch) => {
   try {
     await request.delete(`/api/participants/${participantId}`);
     dispatch(deleteParticipant(participantId));
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message || "Error deleting participant.";
+    dispatch(setError(errorMessage));
+  }
+};
+
+// Delete a participant
+export const AfficherParticipantById = (participantId) => async (dispatch) => {
+  dispatch(startLoading());
+  try {
+    await request.get(`/api/participants/${participantId}`);
+    dispatch(afficherParticipant(participantId));
   } catch (error) {
     const errorMessage =
       error.response?.data?.message || "Error deleting participant.";

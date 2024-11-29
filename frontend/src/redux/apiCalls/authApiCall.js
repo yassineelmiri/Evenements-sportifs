@@ -4,7 +4,6 @@ import request from "../../utils/request";
 //LOGINE USER
 export function loginUser(user) {
   return async (dispatch) => {
-    
     try {
       const { data } = await request.post("/api/auth/login", user);
       dispatch(authActions.login(data));
