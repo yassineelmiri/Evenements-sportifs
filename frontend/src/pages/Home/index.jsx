@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { Link, useNavigate } from "react-router-dom";
-
+import logo from "../../assets/images/logo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchParticipants } from "../../redux/apiCalls/participantsApiCall";
 const images = [
   require("../../assets/images/full-slider/2.jpg"),
   require("../../assets/images/full-slider/3.jpg"),
@@ -15,8 +17,22 @@ const images = [
 ];
 
 const Home = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const { participants } = useSelector((state) => state.participants);
+  let filteredParticipants = [];
+
+  useEffect(() => {
+    dispatch(fetchParticipants());
+  }, [dispatch]);
+
+  if (userInfo) {
+    filteredParticipants = participants?.filter((event) =>
+      event.participants?.includes(userInfo.username)
+    );
+    console.log("Filtered Events:", filteredParticipants);
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -29,7 +45,11 @@ const Home = () => {
       {/* Navbar */}
       <nav className="bg-black text-white">
         <div className="container mx-auto flex justify-between items-center p-4">
-          <div className="text-2xl font-bold">RS SPORTS</div>
+          {/* Logo */}
+          <div className="flex items-center">
+            <img src={logo} alt="RS SPORTS Logo" className="h-20 mr-6" />
+          </div>
+          {/* Links */}
           <div className="hidden md:flex space-x-6">
             {userInfo ? (
               <button
@@ -68,7 +88,6 @@ const Home = () => {
           </div>
         </div>
       </nav>
-
       {/* Slider */}
       <div>
         <Swiper
@@ -86,16 +105,25 @@ const Home = () => {
                 >
                   <div className="flex items-center justify-center h-full bg-black bg-opacity-50">
                     <div className="text-center text-white">
-                      <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                      Loading Tick
-                        <span className="text-yellow-500">et...</span>
-                      </h1>
+                      {!filteredParticipants.length > 0 ? (
+                        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                          Attends Evenm
+                          <span className="text-yellow-500">ent...</span>
+                        </h1>
+                      ) : (
+                        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+                          Acceplté Dans :
+                          <span className="text-yellow-500">
+                            {filteredParticipants[0].evenments.title}
+                          </span>
+                        </h1>
+                      )}
                       <div className="flex justify-center space-x-4">
                         <button className="bg-yellow-500 text-black px-6 py-2 rounded hover:bg-yellow-600">
                           READ MORE
                         </button>
                         <Link
-                          to="/signin"
+                          to="/"
                           className="bg-transparent border-2 border-yellow-500 text-yellow-500 px-6 py-2 rounded hover:bg-yellow-600 hover:text-black transition duration-200"
                         >
                           Imprimer List
@@ -110,7 +138,7 @@ const Home = () => {
                   style={{ backgroundImage: `url(${image})` }}
                 >
                   <div className="flex items-center justify-center h-full bg-black bg-opacity-50">
-                    <div  className="text-center text-white">
+                    <div className="text-center text-white">
                       <h1 className="text-4xl md:text-6xl font-bold mb-4">
                         Evénements Sporti
                         <span className="text-yellow-500">fs</span>
