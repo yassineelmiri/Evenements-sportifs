@@ -3,28 +3,28 @@ import { createSlice } from "@reduxjs/toolkit";
 const participantsSlice = createSlice({
   name: "participants",
   initialState: {
-    participants: [], // Liste initiale vide
-    loading: false,   // État de chargement
-    error: null,      // Aucun message d'erreur par défaut
+    participants: [], 
+    loading: false,   
+    error: null,      
   },
   reducers: {
     // Définir la liste des participants
     setParticipants: (state, action) => {
       state.participants = action.payload;
       state.loading = false;
-      state.error = null; // Réinitialiser les erreurs
+      state.error = null;
     },
 
     // Ajouter un participant à la liste
     addParticipant: (state, action) => {
       state.participants.push(action.payload);
-      state.error = null; // Réinitialiser les erreurs
+      state.error = null;
     },
 
     // Déclencher le chargement
     startLoading: (state) => {
       state.loading = true;
-      state.error = null; // Réinitialiser les erreurs
+      state.error = null; 
     },
 
     // Gérer les erreurs
@@ -38,7 +38,14 @@ const participantsSlice = createSlice({
       state.participants = state.participants.filter(
         (participant) => participant._id !== action.payload
       );
-      state.error = null; // Réinitialiser les erreurs
+      state.error = null; 
+    },
+    // Supprimer un participant de la liste
+    afficherParticipant: (state, action) => {
+      state.participants = state.participants.filter(
+        (participant) => participant._id !== action.payload
+      );
+      state.error = null; 
     },
   },
 });
@@ -50,6 +57,7 @@ export const {
   startLoading,
   setError,
   deleteParticipant,
+  afficherParticipant
 } = participantsSlice.actions;
 
 // Exporter le reducer
